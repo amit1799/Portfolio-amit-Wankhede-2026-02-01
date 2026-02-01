@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portfolio of Amit Wankhede - .NET Application Support & Maintenance Professional">
+    <title>Amit Wankhede | The Stability Architect</title>
+    
+    <!-- Fonts: Syne (Impact) + Plus Jakarta Sans (Modern Readability) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['"Syne"', 'sans-serif'],
+                    },
+                    colors: {
+                        platinum: '#f3f4f6',
+                        obsidian: '#0f172a',
+                        accent: '#2563eb', // Royal Blue
+                        'accent-dark': '#1e40af',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulse-glow 3s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        'pulse-glow': {
+                            '0%, 100%': { boxShadow: '0 0 0 0 rgba(37, 99, 235, 0.4)' },
+                            '50%': { boxShadow: '0 0 0 10px rgba(37, 99, 235, 0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Styles for Glassmorphism & Canvas */
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        #network-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0; 
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* Ensure content sits above canvas */
+        nav, section, footer, #ai-widget-container {
+            position: relative;
+            z-index: 10; 
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            border-color: #2563eb;
+        }
+
+        .nav-glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        /* Typography Utilities */
+        .text-display {
+            font-family: 'Syne', sans-serif;
+            letter-spacing: -0.02em;
+            line-height: 1;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #0f172a 0%, #2563eb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Scroll Reveal Utility */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Chat Widget Styles */
+        .chat-message {
+            @apply p-3 rounded-2xl text-sm leading-relaxed max-w-[85%] mb-3 animate-[fade-in_0.3s_ease-out];
+        }
+        .chat-user {
+            @apply bg-accent text-white self-end rounded-br-none;
+        }
+        .chat-ai {
+            @apply bg-white border border-slate-200 text-slate-700 self-start rounded-bl-none shadow-sm;
+        }
+        .typing-dot {
+            @apply w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-accent selection:text-white">
+
+    <!-- Interactive Background -->
+    <canvas id="network-canvas"></canvas>
+
+    <!-- Navigation -->
+    <nav class="nav-glass fixed w-full top-0 z-50 transition-all duration-300">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-xl font-bold font-display tracking-tight text-obsidian flex items-center gap-2">
+                <div class="w-8 h-8 bg-accent rounded-lg flex items-center justify-center text-white">A</div>
+                Amit Wankhede
+            </a>
+            <div class="hidden md:flex gap-8 font-medium text-sm text-slate-600">
+                <a href="#philosophy" class="hover:text-accent transition-colors">Philosophy</a>
+                <a href="#work" class="hover:text-accent transition-colors">Work</a>
+                <a href="#journey" class="hover:text-accent transition-colors">Journey</a>
+                <a href="#contact" class="hover:text-accent transition-colors">Contact</a>
+            </div>
+            <a href="#contact" class="px-5 py-2 bg-obsidian text-white text-sm font-semibold rounded-full hover:bg-accent transition-colors">
+                Let's Talk
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center pt-20 relative">
+        <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+            <div class="reveal">
+                <div class="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-slate-200 text-sm font-semibold text-accent mb-8 shadow-sm">
+                    <span class="relative flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                    </span>
+                    System Status: ONLINE & STABLE
+                </div>
+                <h1 class="text-display text-5xl md:text-7xl font-bold text-obsidian mb-6">
+                    I turn complex problems into <span class="gradient-text">quiet mornings.</span>
+                </h1>
+                <p class="text-lg text-slate-600 leading-relaxed mb-8 max-w-lg">
+                    I am the Custom Software Engineering Analyst who ensures your business never stops. I bridge the gap between .NET, SAP, and SharePoint to build systems that just <em>work</em>.
+                </p>
+                <div class="flex gap-4">
+                    <a href="#work" class="px-8 py-4 bg-accent text-white font-semibold rounded-lg shadow-lg shadow-blue-500/30 hover:bg-accent-dark transition-all transform hover:-translate-y-1">
+                        View My Impact
+                    </a>
+                    <a href="#journey" class="px-8 py-4 bg-white text-obsidian font-semibold rounded-lg border border-slate-200 hover:border-accent hover:text-accent transition-all">
+                        My Journey
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Abstract Graphic: System Stability -->
+            <div class="hidden md:flex justify-center relative reveal delay-200">
+                <div class="relative w-80 h-80 bg-gradient-to-tr from-blue-100 to-white rounded-3xl shadow-2xl flex items-center justify-center animate-float border border-white">
+                    <div class="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))]"></div>
+                    <!-- Central Node -->
+                    <div class="relative z-10 w-24 h-24 bg-white rounded-2xl shadow-xl flex items-center justify-center border border-slate-100">
+                        <i data-lucide="server" class="w-10 h-10 text-accent"></i>
+                    </div>
+                    <!-- Floating Satellites -->
+                    <div class="absolute -top-6 -right-6 w-16 h-16 bg-white rounded-xl shadow-lg flex items-center justify-center border border-slate-100 animate-float" style="animation-delay: 1s;">
+                        <i data-lucide="database" class="w-6 h-6 text-emerald-500"></i>
+                    </div>
+                    <div class="absolute -bottom-4 -left-8 w-16 h-16 bg-white rounded-xl shadow-lg flex items-center justify-center border border-slate-100 animate-float" style="animation-delay: 2s;">
+                        <i data-lucide="globe" class="w-6 h-6 text-purple-500"></i>
+                    </div>
+                    <!-- Connection Lines (Simulated via SVG) -->
+                    <svg class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 0;">
+                        <line x1="50%" y1="50%" x2="85%" y2="20%" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4 4" />
+                        <line x1="50%" y1="50%" x2="15%" y2="80%" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4 4" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Philosophy Section -->
+    <section id="philosophy" class="py-24 bg-white/50 relative">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="mb-16 reveal">
+                <h2 class="text-display text-4xl font-bold text-obsidian mb-4">My Philosophy</h2>
+                <p class="text-slate-600 max-w-2xl text-lg">
+                    Stability isn't accidental. It's engineered. Here is how I approach the chaos of enterprise software.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="glass-card p-8 rounded-2xl reveal delay-100">
+                    <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-accent mb-6">
+                        <i data-lucide="microscope" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-display text-xl font-bold mb-3">I Don't Guess. I Diagnose.</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        When an incident happens, I don't slap on a band-aid. I trace the data through SQL procedures and C# logic to find the <em>true</em> root cause, ensuring the bug stays dead.
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="glass-card p-8 rounded-2xl reveal delay-200">
+                    <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 mb-6">
+                        <i data-lucide="bot" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-display text-xl font-bold mb-3">I Automate the Boring.</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        Manual data entry is a waste of human talent. I build robust C# utilities and background jobs to handle repetitive tasks, saving the team hundreds of hours.
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="glass-card p-8 rounded-2xl reveal delay-300">
+                    <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600 mb-6">
+                        <i data-lucide="network" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-display text-xl font-bold mb-3">I Speak "System".</h3>
+                    <p class="text-slate-600 leading-relaxed">
+                        SAP, SharePoint, .NET—they often don't get along. I act as the translator, building the technical bridges that allow these isolated systems to talk fluently.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Work/Projects Section -->
+    <section id="work" class="py-24">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16 reveal">
+                <div>
+                    <h2 class="text-display text-4xl font-bold text-obsidian mb-4">Case Studies</h2>
+                    <p class="text-slate-600 max-w-xl text-lg">
+                        Real-world examples of how I maintained stability and efficiency in high-stakes environments.
+                    </p>
+                </div>
+                <div class="hidden md:block">
+                    <div class="flex items-center gap-2 text-sm font-bold text-slate-400 uppercase tracking-widest">
+                        <span class="w-12 h-[1px] bg-slate-300"></span> Selected Works
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid gap-8">
+                <!-- Project 1 -->
+                <div class="glass-card p-8 md:p-10 rounded-3xl flex flex-col md:flex-row gap-8 items-start reveal">
+                    <div class="w-full md:w-1/3 shrink-0">
+                        <div class="w-14 h-14 bg-white border border-slate-100 rounded-2xl flex items-center justify-center shadow-sm mb-6 text-accent">
+                            <i data-lucide="shopping-cart" class="w-7 h-7"></i>
+                        </div>
+                        <h3 class="text-display text-2xl font-bold mb-2">Retail Inventory System</h3>
+                        <div class="text-sm font-semibold text-slate-400 mb-4">FULL LIFECYCLE DATA MANAGEMENT</div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600">ASP.NET MVC</span>
+                            <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600">MS SQL</span>
+                            <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600">WinSCP</span>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-2/3 border-t md:border-t-0 md:border-l border-slate-100 md:pl-8 pt-6 md:pt-0">
+                        <p class="text-lg text-slate-700 leading-relaxed mb-4">
+                            <strong>The Challenge:</strong> A critical need to keep inventory data synced across multiple external partners and internal databases without manual intervention.
+                        </p>
+                        <p class="text-slate-600 leading-relaxed">
+                            <strong>My Solution:</strong> I engineered the complete data lifecycle. I built the <strong>Inbound Job</strong> to ingest master data from SharePoint into MS SQL, developed the <strong>ASP.NET MVC</strong> interface for user inputs, and created the <strong>Outbound Job</strong> using complex Stored Procedures to generate precise CSV reports sent via WinSCP.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="glass-card p-8 md:p-10 rounded-3xl flex flex-col md:flex-row gap-8 items-start reveal delay-100">
+                    <div class="w-full md:w-1/3 shrink-0">
+                        <div class="w-14 h-14 bg-white border border-slate-100 rounded-2xl flex items-center justify-center shadow-sm mb-6 text-orange-500">
+                            <i data-lucide="database" class="w-7 h-7"></i>
+                        </div>
+                        <h3 class="text-display text-2xl font-bold mb-2">Enterprise Sales Portal</h3>
+                        <div class="text-sm font-semibold text-slate-400 mb-4">SAP INTEGRATED ECOSYSTEM</div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600">Oracle DB</span>
+                            <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600">Automic</span>
+                            <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600">RCA</span>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-2/3 border-t md:border-t-0 md:border-l border-slate-100 md:pl-8 pt-6 md:pt-0">
+                        <p class="text-lg text-slate-700 leading-relaxed mb-4">
+                            <strong>The Challenge:</strong> Ensuring 99.9% uptime for a high-traffic portal that relies on complex, real-time data syncs from SAP.
+                        </p>
+                        <p class="text-slate-600 leading-relaxed">
+                            <strong>My Solution:</strong> I maintained this <strong>ASP.NET</strong> web application and its backend <strong>Oracle Database</strong>, which syncs master data directly from SAP. My role involved troubleshooting data anomalies via complex SQL operations and ensuring the web interface accurately reflected real-time SAP updates.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="glass-card p-8 md:p-10 rounded-3xl flex flex-col md:flex-row gap-8 items-start reveal delay-200">
+                    <div class="w-full md:w-1/3 shrink-0">
+                        <div class="w-14 h-14 bg-white border border-slate-100 rounded-2xl flex items-center justify-center shadow-sm mb-6 text-emerald-500">
+                            <i data-lucide="file-cog" class="w-7 h-7"></i>
+                        </div>
+                        <h3 class="text-display text-2xl font-bold mb-2">SharePoint Utility</h3>
+                        <div class="text-sm font-semibold text-slate-400 mb-4">PROCESS AUTOMATION</div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600">C# .NET</span>
+                            <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600">Excel</span>
+                            <span class="px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600">Coordination</span>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-2/3 border-t md:border-t-0 md:border-l border-slate-100 md:pl-8 pt-6 md:pt-0">
+                        <p class="text-lg text-slate-700 leading-relaxed mb-4">
+                            <strong>The Challenge:</strong> Manual file uploads were error-prone and causing friction between the SAP and SharePoint teams.
+                        </p>
+                        <p class="text-slate-600 leading-relaxed">
+                            <strong>My Solution:</strong> I built a <strong>C# automation utility</strong> that handles file processing and Excel logging automatically. I acted as the technical bridge, coordinating access and storage protocols between the SAP and SharePoint teams to ensure smooth integration.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience / Timeline -->
+    <section id="journey" class="py-24 bg-white">
+        <div class="max-w-4xl mx-auto px-6">
+            <h2 class="text-display text-4xl font-bold text-center text-obsidian mb-16 reveal">The Journey So Far</h2>
+
+            <div class="relative border-l-2 border-slate-200 ml-6 md:ml-12 space-y-12 reveal">
+                <!-- Item 1 -->
+                <div class="relative pl-8 md:pl-12">
+                    <div class="absolute -left-[9px] top-0 w-5 h-5 rounded-full bg-accent border-4 border-white shadow-sm"></div>
+                    <div class="glass-card p-6 md:p-8 rounded-2xl">
+                        <div class="flex flex-wrap justify-between items-baseline mb-2">
+                            <h3 class="text-xl font-bold text-obsidian">Custom Software Engineering Analyst</h3>
+                            <span class="text-sm font-semibold text-accent">Feb 2022 - Present</span>
+                        </div>
+                        <div class="text-sm font-medium text-slate-500 uppercase tracking-wide mb-4">Accenture | Consumer Goods Domain</div>
+                        <p class="text-slate-600 mb-4">
+                            My role focuses on <strong>L2/L3 Application Support</strong> and <strong>Operational Stability</strong>. I have successfully supported the migration of legacy apps from Azure to AWS and consistently reduced manual effort through automation.
+                        </p>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 bg-yellow-50 text-yellow-700 text-sm font-semibold rounded-lg border border-yellow-100">
+                            <i data-lucide="award" class="w-4 h-4"></i>
+                            Awarded Pinnacle "Rising Star" (2023)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Education (Grouped) -->
+                <div class="relative pl-8 md:pl-12">
+                    <div class="absolute -left-[9px] top-0 w-5 h-5 rounded-full bg-slate-300 border-4 border-white shadow-sm"></div>
+                    <div class="glass-card p-6 md:p-8 rounded-2xl">
+                        <h3 class="text-xl font-bold text-obsidian mb-6">Education</h3>
+                        
+                        <div class="space-y-6">
+                            <div class="flex justify-between items-start border-b border-slate-100 pb-4 last:border-0 last:pb-0">
+                                <div>
+                                    <div class="font-bold text-slate-800">B.Tech in Computers</div>
+                                    <div class="text-sm text-slate-500">Priyadarshini College of Engineering</div>
+                                </div>
+                                <div class="font-bold text-accent">8.89/10</div>
+                            </div>
+                            
+                            <div class="flex justify-between items-start border-b border-slate-100 pb-4 last:border-0 last:pb-0">
+                                <div>
+                                    <div class="font-bold text-slate-800">Diploma in Computer Technology</div>
+                                    <div class="text-sm text-slate-500">Priyadarshini Polytechnic</div>
+                                </div>
+                                <div class="font-bold text-accent">67.47%</div>
+                            </div>
+
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="font-bold text-slate-800">Secondary School (10th)</div>
+                                    <div class="text-sm text-slate-500">Maharashtra State Board</div>
+                                </div>
+                                <div class="font-bold text-accent">73%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Grid -->
+    <section id="skills" class="py-24 bg-obsidian text-white">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <h2 class="text-display text-4xl font-bold mb-16 reveal">Technical Arsenal</h2>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 reveal">
+                <!-- Skill Items -->
+                <div class="p-6 bg-white/5 rounded-2xl hover:bg-white/10 transition-colors border border-white/10">
+                    <i data-lucide="code-2" class="w-8 h-8 mx-auto mb-4 text-emerald-400"></i>
+                    <div class="font-bold text-sm">ASP.NET MVC</div>
+                </div>
+                <div class="p-6 bg-white/5 rounded-2xl hover:bg-white/10 transition-colors border border-white/10">
+                    <i data-lucide="terminal" class="w-8 h-8 mx-auto mb-4 text-blue-400"></i>
+                    <div class="font-bold text-sm">C# .NET</div>
+                </div>
+                <div class="p-6 bg-white/5 rounded-2xl hover:bg-white/10 transition-colors border border-white/10">
+                    <i data-lucide="database" class="w-8 h-8 mx-auto mb-4 text-orange-400"></i>
+                    <div class="font-bold text-sm">SQL Server</div>
+                </div>
+                <div class="p-6 bg-white/5 rounded-2xl hover:bg-white/10 transition-colors border border-white/10">
+                    <i data-lucide="server" class="w-8 h-8 mx-auto mb-4 text-red-400"></i>
+                    <div class="font-bold text-sm">Oracle PL/SQL</div>
+                </div>
+                <div class="p-6 bg-white/5 rounded-2xl hover:bg-white/10 transition-colors border border-white/10">
+                    <i data-lucide="clock" class="w-8 h-8 mx-auto mb-4 text-purple-400"></i>
+                    <div class="font-bold text-sm">Automic</div>
+                </div>
+                <div class="p-6 bg-white/5 rounded-2xl hover:bg-white/10 transition-colors border border-white/10">
+                    <i data-lucide="activity" class="w-8 h-8 mx-auto mb-4 text-pink-400"></i>
+                    <div class="font-bold text-sm">Incident Mgmt</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="py-24 text-center">
+        <div class="max-w-4xl mx-auto px-6 reveal">
+            <h2 class="text-display text-4xl md:text-5xl font-bold text-obsidian mb-6">
+                Ready to build a future of<br>uninterrupted growth?
+            </h2>
+            <p class="text-xl text-slate-500 mb-12">
+                Reliable systems are the foundation for your next big milestone.
+            </p>
+            
+            <a href="mailto:amitwankhede39@gmail.com" class="text-2xl md:text-3xl font-bold font-display text-accent hover:text-accent-dark border-b-2 border-accent/20 hover:border-accent transition-colors pb-1">
+                amitwankhede39@gmail.com
+            </a>
+
+            <div class="flex justify-center gap-8 mt-12 mb-16">
+                <a href="https://www.linkedin.com/in/amit-wankhede-211444361" target="_blank" class="flex items-center gap-2 text-slate-600 hover:text-accent font-semibold transition-colors">
+                    <i data-lucide="linkedin" class="w-5 h-5"></i> LinkedIn
+                </a>
+                <a href="https://www.naukri.com/mnjuser/profile" target="_blank" class="flex items-center gap-2 text-slate-600 hover:text-accent font-semibold transition-colors">
+                    <i data-lucide="file-text" class="w-5 h-5"></i> Naukri Profile
+                </a>
+            </div>
+
+            <p class="text-sm text-slate-400">
+                &copy; 2026 Amit Wankhede. Designed with precision.
+            </p>
+        </div>
+    </footer>
+
+    <!-- AI Chat Widget -->
+    <div id="ai-widget-container" class="fixed bottom-6 right-6 z-50">
+        <!-- Chat Button -->
+        <button id="ai-toggle-btn" class="flex items-center gap-2 px-5 py-3 bg-white/90 backdrop-blur-md border border-white/50 rounded-full shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all group animate-pulse-glow">
+            <span class="relative flex h-3 w-3">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+            </span>
+            <span class="font-bold text-slate-800 group-hover:text-accent">✨ Ask Amit's AI</span>
+        </button>
+
+        <!-- Chat Window (Hidden by default) -->
+        <div id="ai-chat-window" class="hidden absolute bottom-16 right-0 w-[90vw] md:w-[400px] h-[500px] bg-white/95 backdrop-blur-xl border border-white/50 rounded-2xl shadow-2xl flex flex-col overflow-hidden transition-all origin-bottom-right scale-95 opacity-0">
+            <!-- Header -->
+            <div class="p-4 bg-slate-50/80 border-b border-slate-100 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white shadow-md">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-800 text-sm">Amit's Assistant</h4>
+                        <div class="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Online
+                        </div>
+                    </div>
+                </div>
+                <button id="ai-close-btn" class="text-slate-400 hover:text-slate-600 p-1 rounded-md hover:bg-slate-100">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Chat Area -->
+            <div id="chat-messages" class="flex-1 p-4 overflow-y-auto bg-slate-50/30 flex flex-col gap-3">
+                <!-- Welcome Message -->
+                <div class="chat-message chat-ai">
+                    Hello! I'm Amit's AI Assistant. I know everything about his experience with .NET, SQL, and automation. How can I help you?
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="flex flex-wrap gap-2 mt-2">
+                    <button class="quick-action px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600 hover:border-accent hover:text-accent transition-colors shadow-sm">
+                        Summarize Experience
+                    </button>
+                    <button class="quick-action px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600 hover:border-accent hover:text-accent transition-colors shadow-sm">
+                        Technical Skills?
+                    </button>
+                    <button class="quick-action px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600 hover:border-accent hover:text-accent transition-colors shadow-sm">
+                        Contact Info
+                    </button>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="p-3 bg-white border-t border-slate-100">
+                <form id="chat-form" class="flex gap-2">
+                    <input type="text" id="chat-input" placeholder="Ask about Amit's projects..." class="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-blue-100 transition-all">
+                    <button type="submit" class="p-2.5 bg-accent text-white rounded-xl hover:bg-accent-dark transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                    </button>
+                </form>
+                <div class="text-[10px] text-slate-400 text-center mt-2">Powered by Gemini AI ✨</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // 1. Scroll Animation Observer
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // 2. Initialize Icons
+        try {
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        } catch (e) {
+            console.error("Icon loading failed:", e);
+        }
+
+        // 3. Neural Network Background Animation
+        try {
+            const canvas = document.getElementById('network-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            
+            const nodes = [];
+            
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+                initNodes();
+            }
+
+            class Node {
+                constructor() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.size = Math.random() * 2 + 2; 
+                    this.vx = (Math.random() - 0.5) * 0.2; 
+                    this.vy = (Math.random() - 0.5) * 0.2;
+                    this.packets = []; 
+                }
+
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    if (this.x < 0 || this.x > width) this.vx *= -1;
+                    if (this.y < 0 || this.y > height) this.vy *= -1;
+                    
+                    if(Math.random() < 0.005) {
+                        this.packets.push({ progress: 0, target: nodes[Math.floor(Math.random() * nodes.length)] });
+                    }
+                }
+
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = '#cbd5e1'; 
+                    ctx.fill();
+
+                    for (let i = this.packets.length - 1; i >= 0; i--) {
+                        let p = this.packets[i];
+                        p.progress += 0.01;
+                        
+                        if (p.progress >= 1) {
+                            this.packets.splice(i, 1);
+                            continue;
+                        }
+
+                        let px = this.x + (p.target.x - this.x) * p.progress;
+                        let py = this.y + (p.target.y - this.y) * p.progress;
+
+                        ctx.beginPath();
+                        ctx.arc(px, py, 2, 0, Math.PI * 2);
+                        ctx.fillStyle = '#3b82f6'; 
+                        ctx.fill();
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(this.x, this.y);
+                        ctx.lineTo(p.target.x, p.target.y);
+                        ctx.strokeStyle = `rgba(59, 130, 246, ${0.05 * (1-p.progress)})`;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            function initNodes() {
+                nodes.length = 0;
+                const count = Math.min(30, (width * height) / 25000); 
+                for(let i = 0; i < count; i++) {
+                    nodes.push(new Node());
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                nodes.forEach(node => {
+                    node.update();
+                    node.draw();
+                });
+
+                ctx.lineWidth = 1;
+                for(let i=0; i<nodes.length; i++) {
+                    for(let j=i+1; j<nodes.length; j++) {
+                        let dx = nodes[i].x - nodes[j].x;
+                        let dy = nodes[i].y - nodes[j].y;
+                        let dist = Math.sqrt(dx*dx + dy*dy);
+
+                        if(dist < 150) {
+                            ctx.strokeStyle = `rgba(203, 213, 225, ${0.15 - dist/1000})`;
+                            ctx.beginPath();
+                            ctx.moveTo(nodes[i].x, nodes[i].y);
+                            ctx.lineTo(nodes[j].x, nodes[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(animate);
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+            animate();
+        } catch (e) {
+            console.error("Canvas animation failed:", e);
+        }
+
+        // ==========================================
+        // 4. GEMINI AI CHAT INTEGRATION
+        // ==========================================
+        const chatWidget = document.getElementById('ai-widget-container');
+        const toggleBtn = document.getElementById('ai-toggle-btn');
+        const chatWindow = document.getElementById('ai-chat-window');
+        const closeBtn = document.getElementById('ai-close-btn');
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const messagesContainer = document.getElementById('chat-messages');
+        const quickActions = document.querySelectorAll('.quick-action');
+
+        let isChatOpen = false;
+        
+        // --- RESUME DATA FOR AI CONTEXT ---
+        const resumeContext = `
+            You are the AI Assistant for Amit Wankhede's portfolio. You represent Amit, a Custom Software Engineering Analyst.
+            Your tone is professional, humble, confident, and reliable.
+            
+            Key Details about Amit:
+            - Role: Custom Software Engineering Analyst at Accenture (Feb 2022 - Present).
+            - Focus: Application Support (L2/L3), Stability, Automation, .NET Development.
+            - Tech Stack: ASP.NET MVC, C# .NET, SQL Server, Oracle PL/SQL, HTML/CSS.
+            - Tools: Automic (Batch Monitoring), ServiceNow, Jira, WinSCP, Excel.
+            - Key Projects:
+                1. Retail Inventory System: Built Inbound/Outbound jobs, ASP.NET MVC UI, MS SQL backend.
+                2. Enterprise Sales Portal: Maintained ASP.NET app + Oracle DB, connected to SAP. Did RCA.
+                3. SharePoint Utility: Built C# automation tool for file uploads.
+            - Achievements: Accenture Pinnacle Award "Rising Star" (2023), 30% reduction in manual effort via automation.
+            - Philosophy: "I turn complex problems into quiet mornings." (Stability focused).
+            - Contact: amitwankhede39@gmail.com.
+            
+            Instructions:
+            - Answer questions based on this context.
+            - Keep answers concise (under 3 sentences usually).
+            - Be helpful and encouraging about hiring Amit.
+            - If asked about something not here, say you don't have that specific info but suggest contacting Amit.
+        `;
+
+        // Toggle Chat
+        function toggleChat() {
+            isChatOpen = !isChatOpen;
+            if (isChatOpen) {
+                chatWindow.classList.remove('hidden', 'scale-95', 'opacity-0');
+                chatWindow.classList.add('scale-100', 'opacity-100');
+                toggleBtn.classList.add('hidden');
+            } else {
+                chatWindow.classList.add('hidden', 'scale-95', 'opacity-0');
+                chatWindow.classList.remove('scale-100', 'opacity-100');
+                toggleBtn.classList.remove('hidden');
+            }
+        }
+
+        toggleBtn.addEventListener('click', toggleChat);
+        closeBtn.addEventListener('click', toggleChat);
+
+        // Append Message to UI
+        function appendMessage(text, isUser) {
+            const div = document.createElement('div');
+            div.className = `chat-message ${isUser ? 'chat-user' : 'chat-ai'}`;
+            // Use marked for simple markdown parsing if available, else plain text
+            div.innerHTML = isUser ? text : marked.parse(text); 
+            messagesContainer.appendChild(div);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Show Typing Indicator
+        function showTyping() {
+            const div = document.createElement('div');
+            div.className = 'chat-message chat-ai flex gap-1 items-center';
+            div.id = 'typing-indicator';
+            div.innerHTML = `<div class="typing-dot"></div><div class="typing-dot" style="animation-delay:0.1s"></div><div class="typing-dot" style="animation-delay:0.2s"></div>`;
+            messagesContainer.appendChild(div);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            return div;
+        }
+
+        // Call Gemini API (with Mock Fallback)
+        async function askGemini(prompt) {
+            // ==================================================
+            // 🚨 INSERT YOUR GEMINI API KEY BELOW TO ENABLE AI 🚨
+            // ==================================================
+            const apiKey = ""; // <--- Paste key inside quotes!
+            
+            // Fallback Mock Logic (If no key is present)
+            if (!apiKey) {
+                // Mock typing delay
+                const typingIndicator = showTyping();
+                
+                setTimeout(() => {
+                    typingIndicator.remove();
+                    const lowerPrompt = prompt.toLowerCase();
+                    let reply = "<strong>Demo Mode:</strong> No API key detected. Once you add your Gemini API key to the code, I can answer anything! <br><br>Here is what I know based on keywords:";
+                    
+                    if (lowerPrompt.includes("skill") || lowerPrompt.includes("stack") || lowerPrompt.includes("tech")) {
+                        reply = "Amit's tech stack includes **ASP.NET MVC, C#, SQL Server, Oracle PL/SQL**, and **Automic**. He is also an expert in **Incident Management** and **RCA**.";
+                    } else if (lowerPrompt.includes("experience") || lowerPrompt.includes("work") || lowerPrompt.includes("job")) {
+                        reply = "Amit has been a **Custom Software Engineering Analyst at Accenture** since Feb 2022. He specializes in L2/L3 support, Azure-to-AWS migrations, and automation.";
+                    } else if (lowerPrompt.includes("project")) {
+                        reply = "Key projects include the **Retail Inventory System** (End-to-end .NET jobs), **Enterprise Sales Portal** (Oracle/SAP integration), and a **SharePoint Automation Utility**.";
+                    } else if (lowerPrompt.includes("contact") || lowerPrompt.includes("email") || lowerPrompt.includes("reach")) {
+                        reply = "You can reach Amit at **amitwankhede39@gmail.com**.";
+                    } else {
+                        reply = "I see you're asking about \"" + prompt + "\". In real mode, I'd analyze Amit's resume to answer that. In this demo, I can tell you about his **Skills**, **Experience**, or **Projects**.";
+                    }
+                    
+                    appendMessage(reply, false);
+                }, 1500);
+                return;
+            }
+
+            // Real API Call
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const typingIndicator = showTyping();
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            role: "user",
+                            parts: [{ text: `System Instruction: ${resumeContext}\n\nUser Question: ${prompt}` }]
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                typingIndicator.remove();
+
+                if (data.candidates && data.candidates[0].content) {
+                    const reply = data.candidates[0].content.parts[0].text;
+                    appendMessage(reply, false);
+                } else {
+                    appendMessage("I'm having trouble connecting to Google's AI servers right now. Please try again later.", false);
+                }
+            } catch (error) {
+                console.error("Gemini Error:", error);
+                typingIndicator.remove();
+                appendMessage("Oops! Something went wrong with the connection. Please check your internet or API key.", false);
+            }
+        }
+
+        // Handle Form Submit
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            appendMessage(text, true);
+            chatInput.value = '';
+            askGemini(text);
+        });
+
+        // Handle Quick Actions
+        quickActions.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const text = btn.innerText;
+                appendMessage(text, true);
+                askGemini(text);
+            });
+        });
+
+    </script>
+</body>
+</html>
